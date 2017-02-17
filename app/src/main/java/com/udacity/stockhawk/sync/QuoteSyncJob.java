@@ -73,7 +73,12 @@ public final class QuoteSyncJob {
 
 
                 Stock stock = quotes.get(symbol);
-                if(stock.getName() != null) {
+
+                // remove unavailable stock from our list, so we don't search again
+                if(stock.getName() == null) {
+                    PrefUtils.removeStock(context, symbol);
+                }
+                else {
                     StockQuote quote = stock.getQuote();
 
                     float price = quote.getPrice().floatValue();
