@@ -41,32 +41,6 @@ public class StockDetailActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         updateChart("AAPL");
-
-//        float[] stockHistory = getStockHistory("MRVL");
-//
-//        float[] valuesX = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-//        //float[] valuesY = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-//        float[] valuesY = stockHistory;
-//
-//        List<Entry> entries = new ArrayList<Entry>();
-//
-//        for (int i=0 ; i< valuesX.length ; i++) {
-//            entries.add(new Entry(valuesX[i], valuesY[i]));
-//        }
-//
-//        LineDataSet dataSet = new LineDataSet(entries, "Label");
-//        dataSet.setCircleColor(Color.CYAN);
-//
-//        YAxis yAxis = mChart.getAxisLeft();
-//        yAxis.setTextColor(Color.WHITE);
-//
-//        XAxis xAxis = mChart.getXAxis();
-//        xAxis.setTextColor(Color.YELLOW);
-//
-//
-//        LineData lineData = new LineData(dataSet);
-//        mChart.setData(lineData);
-//        mChart.invalidate(); // refresh
     }
 
     private void updateChart(String stockSymbol) {
@@ -119,7 +93,7 @@ public class StockDetailActivity extends AppCompatActivity {
 
             //float[] stockHistory = getStockHistory("MRVL");
 
-            float[] valuesX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+            float[] valuesX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
             //float[] valuesX = dateHistory;
             //float[] valuesX = { dateHistory[0]/ 1000000F, dateHistory[1] / 1000000F, dateHistory[2] / 1000000F, dateHistory[5] / 1000000F};
             //float[] valuesY = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
@@ -140,29 +114,10 @@ public class StockDetailActivity extends AppCompatActivity {
                 SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTimeInMillis((long)dateInMillis);
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
                 String formattedDate = formatter.format(calendar.getTime());
 
                 formattedDateHistory[i] = formattedDate;
             }
-
-            //entries.add(new Entry(valuesX[0] / 1000000F, valuesY[0]));
-            //entries.add(new Entry(valuesX[1] / 1000000F, valuesY[1]));
-            //entries.add(new Entry(valuesX[2] / 1000000F, valuesY[2]));
-
-//            entries.add(new Entry(1486972.8F, valuesY[0]));
-//            entries.add(new Entry(1486368.0F, valuesY[1]));
-//            entries.add(new Entry(1485763.2F, valuesY[2]));
-
-//            entries.add(new Entry(1486972, valuesY[0]));
-//            entries.add(new Entry(1486368, valuesY[1]));
-//            entries.add(new Entry(1485763, valuesY[2]));
-
-            //entries.add(new Entry(148697, valuesY[0]));
-            //entries.add(new Entry(148636, valuesY[1]));
-            //entries.add(new Entry(148576, valuesY[2]));
 
             LineDataSet dataSet = new LineDataSet(entries, "Label");
             dataSet.setCircleColor(Color.CYAN);
