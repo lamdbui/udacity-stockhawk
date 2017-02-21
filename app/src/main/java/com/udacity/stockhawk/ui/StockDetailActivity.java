@@ -1,10 +1,13 @@
 package com.udacity.stockhawk.ui;
 
+import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -12,10 +15,13 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
+import com.google.common.collect.Lists;
 import com.udacity.stockhawk.R;
 import com.udacity.stockhawk.data.Contract;
 import com.udacity.stockhawk.data.StockProvider;
+import com.udacity.stockhawk.sync.FetchStockHistoryTask;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -25,13 +31,51 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import yahoofinance.Stock;
+import yahoofinance.YahooFinance;
+import yahoofinance.histquotes.HistoricalQuote;
+import yahoofinance.histquotes.Interval;
 
-public class StockDetailActivity extends AppCompatActivity {
+public class StockDetailActivity extends AppCompatActivity
+    implements FetchStockHistoryTask.OnCompletedFetchStockHistoryTaskListener {
 
     public static final String LOG_TAG = StockDetailActivity.class.getSimpleName();
 
+    public static final String EXTRA_STOCK_SYMBOL = "com.udacity.stockhawk.extra_stock_symbol";
+
+    private String mStockSymbol;
+
+    private List<String> mDateHistory;
+    private List<Float> mPriceHistory;
+
     @BindView(R.id.stock_chart)
-    LineChart mChart;
+    public LineChart mChart;
+    @BindView(R.id.stock_symbol)
+    public TextView mStockSymbolTextView;
+
+    @Override
+    public void completedFetchStockHistoryTask(List<HistoricalQuote> stockHistory) {
+        for(HistoricalQuote h : stockHistory) {
+
+            SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MMM");
+            Calendar calendar = h.getDate();
+            String formattedDate = formatter.format(calendar.getTime());
+
+            mDateHistory.add(formattedDate);
+            mPriceHistory.add(h.getClose().floatValue());
+        }
+
+        // reverse the order so it is ascending
+        mDateHistory = Lists.reverse(mDateHistory);
+        mPriceHistory = Lists.reverse(mPriceHistory);
+
+        updateUi(mStockSymbol);
+    }
+
+    public static Intent newIntent(Context packageContext, String stockSymbol) {
+        Intent intent = new Intent(packageContext, StockDetailActivity.class);
+        intent.putExtra(EXTRA_STOCK_SYMBOL, stockSymbol);
+        return intent;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,160 +84,43 @@ public class StockDetailActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-        updateChart("AAPL");
+        mStockSymbol = getIntent().getStringExtra(EXTRA_STOCK_SYMBOL);
+
+        mDateHistory = new ArrayList<>();
+        mPriceHistory = new ArrayList<>();
+
+        mStockSymbolTextView.setText(mStockSymbol);
+
+        FetchStockHistoryTask fetchStockHistoryTask = new FetchStockHistoryTask(this);
+        fetchStockHistoryTask.execute(mStockSymbol);
     }
 
-    private void updateChart(String stockSymbol) {
+    private void updateUi(String stockSymbol) {
+        List<Entry> entries = new ArrayList<>();
 
-        final int MAX_POINTS = 6;
-
-        Cursor cursor = getContentResolver().query(
-                Contract.Quote.URI,
-                null,
-                Contract.Quote.COLUMN_SYMBOL + " = ?",
-                new String[] { stockSymbol },
-                null
-        );
-
-        //Date[] dates = new Date
-        cursor.moveToFirst();
-
-        if(cursor != null) {
-            String symbol = cursor.getString(Contract.Quote.POSITION_SYMBOL);
-            String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
-
-            String[] historyArray = history.split("\n");
-            float[] dateHistory = new float[historyArray.length];
-            float[] priceHistory = new float[historyArray.length];
-            String[] formattedDateHistory = new String[historyArray.length];
-
-            //for(String stockEntry : historyArray) {
-            for(int i = 0; i < historyArray.length; i++) {
-                String stockEntry = historyArray[i];
-                String[] stockDateAndPrice = stockEntry.split(",");
-                String dateInMillis = stockDateAndPrice[0];
-                String price = stockDateAndPrice[1];
-
-                priceHistory[i] = Float.parseFloat(price);
-                dateHistory[i] = Float.parseFloat(dateInMillis);
-                //SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
-                SimpleDateFormat formatter = new SimpleDateFormat("YYYYMMdd");
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis(Long.parseLong(dateInMillis));
-                int year = calendar.get(Calendar.YEAR);
-                int month = calendar.get(Calendar.MONTH);
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                String formattedDate = formatter.format(calendar.getTime());
-
-                //formattedDateHistory[i] = formattedDate;
-
-                //Log.d(LOG_TAG, "date/price: " + year + "/" + month + "/" + day + "/" + price);
-                //Log.d(LOG_TAG, "date/price" + formattedDate + "/" + price);
-            }
-
-            //float[] stockHistory = getStockHistory("MRVL");
-
-            float[] valuesX = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-            //float[] valuesX = dateHistory;
-            //float[] valuesX = { dateHistory[0]/ 1000000F, dateHistory[1] / 1000000F, dateHistory[2] / 1000000F, dateHistory[5] / 1000000F};
-            //float[] valuesY = {10, 20, 30, 40, 50, 60, 70, 80, 90, 100};
-            //float[] valuesY = {130, 100, 25, 45, 122, 100, 78, 89, 99, 102, 111, 120, 130};
-            float[] valuesY = priceHistory;
-
-            List<Entry> entries = new ArrayList<>();
-
-            //Entry e = new Entry()
-
-            for (int i = 0 ; i < valuesX.length ; i++) {
-                Log.d(LOG_TAG, "MAX ITEM: " + (i * (valuesY.length / valuesX.length)));
-
-                float dateInMillis = dateHistory[i * (valuesY.length / valuesX.length)];
-
-                entries.add(new Entry(valuesX[i], valuesY[i * (valuesY.length / valuesX.length)]));
-
-                SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTimeInMillis((long)dateInMillis);
-                String formattedDate = formatter.format(calendar.getTime());
-
-                formattedDateHistory[i] = formattedDate;
-            }
-
-            LineDataSet dataSet = new LineDataSet(entries, "Label");
-            dataSet.setCircleColor(Color.CYAN);
-            dataSet.setValueTextColor(Color.WHITE);
-
-            YAxis yAxis = mChart.getAxisLeft();
-            yAxis.setTextColor(Color.WHITE);
-            //yAxis.setGranularity(10f);
-            //yAxis.setGranularityEnabled(true);
-
-            XAxis xAxis = mChart.getXAxis();
-            xAxis.setTextColor(Color.YELLOW);
-            xAxis.setValueFormatter(new DateLabelFormatter(formattedDateHistory));
-            //xAxis.setLabelCount(6);
-            //xAxis.setGranularity(10f);
-
-
-            LineData lineData = new LineData(dataSet);
-            mChart.setData(lineData);
-            mChart.invalidate(); // refresh
-
+        for(int i = 0; i < mPriceHistory.size(); i++) {
+            entries.add(new Entry(i, mPriceHistory.get(i)));
         }
-        else {
-            Log.d(LOG_TAG, "Invalid Stock Symbol selected: " + stockSymbol);
-        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "PRICE HISTORY");
+        dataSet.setCircleColor(Color.CYAN);
+        dataSet.setValueTextColor(Color.WHITE);
+        dataSet.setValueTextSize(12.0f);
+
+        YAxis yAxis = mChart.getAxisLeft();
+        yAxis.setTextColor(Color.WHITE);
+        yAxis.setTextSize(12.0f);
+
+        XAxis xAxis = mChart.getXAxis();
+        xAxis.setTextColor(Color.YELLOW);
+        xAxis.setTextSize(12.0f);
+        xAxis.setValueFormatter(new DateLabelFormatter(mDateHistory));
+        xAxis.setGranularity(2.0f);
+        xAxis.setGranularityEnabled(true);
+
+        LineData lineData = new LineData(dataSet);
+        mChart.setData(lineData);
+        mChart.invalidate();
 
     }
-
-
-//    private float[] getStockHistory(String stockSymbol) {
-//        Cursor cursor = getContentResolver().query(
-//                Contract.Quote.URI,
-//                null,
-//                Contract.Quote.COLUMN_SYMBOL + " = ?",
-//                new String[] { stockSymbol },
-//                null
-//                );
-//
-//        //Date[] dates = new Date
-//        cursor.moveToFirst();
-//
-//        if(cursor != null) {
-//            String symbol = cursor.getString(Contract.Quote.POSITION_SYMBOL);
-//            String history = cursor.getString(Contract.Quote.POSITION_HISTORY);
-//            //Log.d("LOLWUT: " + cursor.getString(Contract.Quote.POSITION_SYMBOL));
-//            //Date date = new Date()
-//            String[] historyArray = history.split("\n");
-//            float[] priceHistory = new float[historyArray.length];
-//
-//            //for(String stockEntry : historyArray) {
-//            for(int i = 0; i < historyArray.length; i++) {
-//                String stockEntry = historyArray[i];
-//                String[] stockDateAndPrice = stockEntry.split(",");
-//                String dateInMillis = stockDateAndPrice[0];
-//                String price = stockDateAndPrice[1];
-//
-//                priceHistory[i] = Float.parseFloat(price);
-//
-//                SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
-//                Calendar calendar = Calendar.getInstance();
-//                calendar.setTimeInMillis(Long.parseLong(dateInMillis));
-//                int year = calendar.get(Calendar.YEAR);
-//                int month = calendar.get(Calendar.MONTH);
-//                int day = calendar.get(Calendar.DAY_OF_MONTH);
-//                String formattedDate = formatter.format(calendar.getTime());
-//
-//                //Log.d(LOG_TAG, "date/price: " + year + "/" + month + "/" + day + "/" + price);
-//                Log.d(LOG_TAG, "date/price" + formattedDate + "/" + price);
-//            }
-//
-//            return priceHistory;
-//        }
-//        else {
-//            Log.d(LOG_TAG, "Invalid Stock Symbol selected: " + stockSymbol);
-//        }
-//
-//        return null;
-//    }
 }
