@@ -6,4 +6,10 @@
     <dimen name="font_size_medium">22sp</dimen>
     <dimen name="font_size_large">34sp</dimen>
 
+    <dimen name="widget_text_width">38dp</dimen>
+    <dimen name="widget_default_width">250dp</dimen>
+    <dimen name="widget_default_height">180dp</dimen>
+    <dimen name="widget_min_resize_width">220dp</dimen>
+    <dimen name="widget_min_resize_height">@dimen/widget_default_height</dimen>
+
 </resources>
