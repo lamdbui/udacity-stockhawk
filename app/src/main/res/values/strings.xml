@@ -20,6 +20,7 @@
 
     <string name="action_change_units" translatable="false">@string/pref_display_mode_key</string>
 
+    <string name="chart_price_history">Price History($USD)</string>
 
     <string name="dialog_title">Add Stock</string>
     <string name="dialog_hint">Symbol (e.g. GOOG)</string>

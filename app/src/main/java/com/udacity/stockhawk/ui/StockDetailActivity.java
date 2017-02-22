@@ -102,21 +102,29 @@ public class StockDetailActivity extends AppCompatActivity
             entries.add(new Entry(i, mPriceHistory.get(i)));
         }
 
-        LineDataSet dataSet = new LineDataSet(entries, "PRICE HISTORY");
+        LineDataSet dataSet = new LineDataSet(entries, getString(R.string.chart_price_history));
         dataSet.setCircleColor(Color.CYAN);
-        dataSet.setValueTextColor(Color.WHITE);
-        dataSet.setValueTextSize(12.0f);
+        //dataSet.setValueTextColor(Color.WHITE);
+        //dataSet.setValueTextSize(12.0f);
+        dataSet.setDrawValues(false);
+
+        // turn off extra labels
+        mChart.getAxisRight().setDrawLabels(false);
+        mChart.setExtraTopOffset(16.0f);
+        mChart.setExtraRightOffset(26.0f);
 
         YAxis yAxis = mChart.getAxisLeft();
         yAxis.setTextColor(Color.WHITE);
         yAxis.setTextSize(12.0f);
 
         XAxis xAxis = mChart.getXAxis();
-        xAxis.setTextColor(Color.YELLOW);
+        xAxis.setTextColor(Color.WHITE);
         xAxis.setTextSize(12.0f);
         xAxis.setValueFormatter(new DateLabelFormatter(mDateHistory));
         xAxis.setGranularity(2.0f);
         xAxis.setGranularityEnabled(true);
+
+        //xAxis.setYOffset(22.0f);
 
         LineData lineData = new LineData(dataSet);
         mChart.setData(lineData);
