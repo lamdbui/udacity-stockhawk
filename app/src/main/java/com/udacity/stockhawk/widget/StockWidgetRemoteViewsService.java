@@ -2,6 +2,7 @@ package com.udacity.stockhawk.widget;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.icu.text.DecimalFormat;
 import android.os.Binder;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
@@ -79,14 +80,17 @@ public class StockWidgetRemoteViewsService extends RemoteViewsService {
 
                 if(mData.moveToPosition(i)) {
                     String stockSymbol = mData.getString(POSITION_SYMBOL);
-                    String stockPrice = mData.getString(POSITION_PRICE);
-                    String stockAbsoluteChange = mData.getString(POSITION_ABSOLUTE_CHANGE);
-                    String stockPercentChange = mData.getString(POSITION_PERCENTAGE_CHANGE);
+                    float stockPrice = mData.getFloat(POSITION_PRICE);
+                    float stockAbsoluteChange = mData.getFloat(POSITION_ABSOLUTE_CHANGE);
+                    float stockPercentChange = mData.getFloat(POSITION_PERCENTAGE_CHANGE);
+                    String stockPriceString = String.format("$%.2f", stockPrice);
+                    String stockAbsoluteChangeString = Float.toString(stockAbsoluteChange);
+                    String stockPercentChangeString = String.format("%.2f%%", stockPercentChange);
 
                     // bind our data
                     views.setTextViewText(R.id.widget_stock_symbol, stockSymbol);
-                    views.setTextViewText(R.id.widget_price, stockPrice);
-                    views.setTextViewText(R.id.widget_change, stockAbsoluteChange);
+                    views.setTextViewText(R.id.widget_price, stockPriceString);
+                    views.setTextViewText(R.id.widget_change, stockPercentChangeString);
                 }
 
                 return views;
