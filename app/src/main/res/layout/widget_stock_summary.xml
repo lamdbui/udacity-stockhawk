@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/widget"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:padding="@dimen/widget_margin">
 
     <ListView
         android:id="@+id/widget_stock_list"
@@ -13,7 +14,8 @@
         android:id="@+id/widget_empty"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:textAppearance="?android:textAppearanceLarge"
+        android:gravity="center"
+        android:textAppearance="?android:textAppearanceMedium"
         android:text="@string/widget_no_stocks"/>
 
 </FrameLayout>
