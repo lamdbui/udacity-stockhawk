@@ -85,12 +85,16 @@ public class StockWidgetRemoteViewsService extends RemoteViewsService {
                     float stockPercentChange = mData.getFloat(POSITION_PERCENTAGE_CHANGE);
                     String stockPriceString = String.format("$%.2f", stockPrice);
                     //String stockAbsoluteChangeString = Float.toString(stockAbsoluteChange);
-                    String stockPercentChangeString = String.format("%.2f%%", stockPercentChange);
+                    StringBuilder stockPercentChangeBuilder = new StringBuilder();
+                    if(stockPercentChange > 0) {
+                        stockPercentChangeBuilder.append("+");
+                    }
+                    stockPercentChangeBuilder.append(String.format("%.2f%%", stockPercentChange));
 
                     // bind our data
                     views.setTextViewText(R.id.widget_stock_symbol, stockSymbol);
                     views.setTextViewText(R.id.widget_price, stockPriceString);
-                    views.setTextViewText(R.id.widget_change, stockPercentChangeString);
+                    views.setTextViewText(R.id.widget_change, stockPercentChangeBuilder.toString());
                 }
 
                 return views;

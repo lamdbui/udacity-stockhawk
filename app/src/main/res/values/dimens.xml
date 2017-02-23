@@ -13,6 +13,7 @@
     <dimen name="widget_min_resize_width">@dimen/widget_default_width</dimen>
     <dimen name="widget_min_resize_height">@dimen/widget_default_height</dimen>
     <dimen name="widget_margin">8dp</dimen>
+    <dimen name="widget_price_margin_end">10sp</dimen>
 
     <dimen name="list_item_padding">3dp</dimen>
 

@@ -2,7 +2,10 @@ package com.udacity.stockhawk.data;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.os.Handler;
+import android.os.Looper;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import com.udacity.stockhawk.R;
 
@@ -86,6 +89,17 @@ public final class PrefUtils {
         }
 
         editor.apply();
+    }
+
+    // helper function to display error on the UI thread
+    public static void displayInvalidStockError(final Context context, String stockSymbol) {
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(context, R.string.error_invalid_stock, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 }

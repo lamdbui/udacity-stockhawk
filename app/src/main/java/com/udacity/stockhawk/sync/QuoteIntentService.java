@@ -21,13 +21,5 @@ public class QuoteIntentService extends IntentService {
     protected void onHandleIntent(Intent intent) {
         Timber.d("Intent handled");
         QuoteSyncJob.getQuotes(getApplicationContext());
-
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getApplicationContext(), R.string.error_invalid_stock, Toast.LENGTH_SHORT).show();
-            }
-        });
     }
 }
