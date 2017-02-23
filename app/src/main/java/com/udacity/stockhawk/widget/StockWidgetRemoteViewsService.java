@@ -81,10 +81,10 @@ public class StockWidgetRemoteViewsService extends RemoteViewsService {
                 if(mData.moveToPosition(i)) {
                     String stockSymbol = mData.getString(POSITION_SYMBOL);
                     float stockPrice = mData.getFloat(POSITION_PRICE);
-                    float stockAbsoluteChange = mData.getFloat(POSITION_ABSOLUTE_CHANGE);
+                    //float stockAbsoluteChange = mData.getFloat(POSITION_ABSOLUTE_CHANGE);
                     float stockPercentChange = mData.getFloat(POSITION_PERCENTAGE_CHANGE);
                     String stockPriceString = String.format("$%.2f", stockPrice);
-                    String stockAbsoluteChangeString = Float.toString(stockAbsoluteChange);
+                    //String stockAbsoluteChangeString = Float.toString(stockAbsoluteChange);
                     String stockPercentChangeString = String.format("%.2f%%", stockPercentChange);
 
                     // bind our data

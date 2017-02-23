@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
@@ -105,14 +106,15 @@ public class StockDetailActivity extends AppCompatActivity
 
         LineDataSet dataSet = new LineDataSet(entries, getString(R.string.chart_price_history));
         dataSet.setCircleColor(Color.CYAN);
-        //dataSet.setValueTextColor(Color.WHITE);
-        //dataSet.setValueTextSize(12.0f);
         dataSet.setDrawValues(false);
 
         // turn off extra labels
         mChart.getAxisRight().setDrawLabels(false);
         mChart.setExtraTopOffset(16.0f);
         mChart.setExtraRightOffset(26.0f);
+        Description description = new Description();
+        description.setText("");
+        mChart.setDescription(description);
 
         YAxis yAxis = mChart.getAxisLeft();
         yAxis.setTextColor(Color.WHITE);

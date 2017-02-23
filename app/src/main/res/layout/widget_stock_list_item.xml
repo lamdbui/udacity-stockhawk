@@ -35,8 +35,8 @@
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_size_small"
             android:textColor="@android:color/white"
-            android:paddingLeft="3dp"
-            android:paddingRight="3dp"
+            android:paddingStart="@dimen/list_item_padding"
+            android:paddingEnd="@dimen/list_item_padding"
             tools:text="+0.89%"/>
 
     </LinearLayout>

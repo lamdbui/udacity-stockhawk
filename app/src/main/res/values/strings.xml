@@ -22,6 +22,7 @@
     <string name="chart_price_history">Price History($USD)</string>
 
     <string name="add_stock">Add Stock</string>
+    <string name="error_invalid_stock">Error! Invalid stock symbol entered. Please enter a valid stock symbol!</string>
 
     <string name="dialog_title">Add Stock</string>
     <string name="dialog_hint">Symbol (e.g. GOOG)</string>
