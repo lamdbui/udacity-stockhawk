@@ -10,6 +10,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.Entry;
@@ -124,7 +125,9 @@ public class StockDetailActivity extends AppCompatActivity
         xAxis.setGranularity(2.0f);
         xAxis.setGranularityEnabled(true);
 
-        //xAxis.setYOffset(22.0f);
+        Legend legend = mChart.getLegend();
+        legend.setTextColor(Color.WHITE);
+        legend.setTextSize(12.0f);
 
         LineData lineData = new LineData(dataSet);
         mChart.setData(lineData);

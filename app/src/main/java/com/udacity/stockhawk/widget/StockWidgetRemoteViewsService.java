@@ -99,7 +99,6 @@ public class StockWidgetRemoteViewsService extends RemoteViewsService {
             @Override
             public RemoteViews getLoadingView() {
                 return null;
-                //return new RemoteViews(getPackageName(), R.layout.widget_stock_list_item);
             }
 
             @Override
@@ -109,9 +108,6 @@ public class StockWidgetRemoteViewsService extends RemoteViewsService {
 
             @Override
             public long getItemId(int i) {
-//                if(mData != null && mData.moveToPosition(i)) {
-//                    return mData.getInt(POSITION_ID);
-//                }
                 return i;
             }
 
