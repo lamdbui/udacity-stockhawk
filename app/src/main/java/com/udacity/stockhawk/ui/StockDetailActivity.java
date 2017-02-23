@@ -2,11 +2,11 @@ package com.udacity.stockhawk.ui;
 
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Color;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.charts.LineChart;
@@ -19,9 +19,7 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.google.common.collect.Lists;
 import com.udacity.stockhawk.R;
-import com.udacity.stockhawk.data.Contract;
-import com.udacity.stockhawk.data.StockProvider;
-import com.udacity.stockhawk.sync.FetchStockHistoryTask;
+import com.udacity.stockhawk.sync.StockHistoryLoader;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -32,17 +30,17 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import yahoofinance.Stock;
-import yahoofinance.YahooFinance;
 import yahoofinance.histquotes.HistoricalQuote;
-import yahoofinance.histquotes.Interval;
 
 public class StockDetailActivity extends AppCompatActivity
-    implements FetchStockHistoryTask.OnCompletedFetchStockHistoryTaskListener {
+    implements LoaderManager.LoaderCallbacks<List<HistoricalQuote>> {
 
     public static final String LOG_TAG = StockDetailActivity.class.getSimpleName();
 
+    public static final int LOADER_STOCK_HISTORY = 0;
+
     public static final String EXTRA_STOCK_SYMBOL = "com.udacity.stockhawk.extra_stock_symbol";
+    public static final String ARG_STOCK_SYMBOL = "stock_symbol";
 
     private String mStockSymbol;
 
@@ -55,23 +53,37 @@ public class StockDetailActivity extends AppCompatActivity
     public TextView mStockSymbolTextView;
 
     @Override
-    public void completedFetchStockHistoryTask(List<HistoricalQuote> stockHistory) {
-        for(HistoricalQuote h : stockHistory) {
-
-            SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MMM");
-            Calendar calendar = h.getDate();
-            String formattedDate = formatter.format(calendar.getTime());
-
-            mDateHistory.add(formattedDate);
-            mPriceHistory.add(h.getClose().floatValue());
-        }
-
-        // reverse the order so it is ascending
-        mDateHistory = Lists.reverse(mDateHistory);
-        mPriceHistory = Lists.reverse(mPriceHistory);
-
-        updateUi(mStockSymbol);
+    public Loader<List<HistoricalQuote>> onCreateLoader(int id, Bundle args) {
+        return new StockHistoryLoader(this, args.getString(ARG_STOCK_SYMBOL));
     }
+
+    @Override
+    public void onLoadFinished(Loader<List<HistoricalQuote>> loader, List<HistoricalQuote> data) {
+        if(data != null) {
+            for(HistoricalQuote h : data) {
+
+                SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MMM");
+                Calendar calendar = h.getDate();
+                String formattedDate = formatter.format(calendar.getTime());
+
+                mDateHistory.add(formattedDate);
+                mPriceHistory.add(h.getClose().floatValue());
+            }
+
+            // reverse the order so it is ascending
+            mDateHistory = Lists.reverse(mDateHistory);
+            mPriceHistory = Lists.reverse(mPriceHistory);
+
+            updateUI();
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<List<HistoricalQuote>> loader) {
+
+    }
+
+
 
     public static Intent newIntent(Context packageContext, String stockSymbol) {
         Intent intent = new Intent(packageContext, StockDetailActivity.class);
@@ -93,11 +105,12 @@ public class StockDetailActivity extends AppCompatActivity
 
         mStockSymbolTextView.setText(mStockSymbol);
 
-        FetchStockHistoryTask fetchStockHistoryTask = new FetchStockHistoryTask(this);
-        fetchStockHistoryTask.execute(mStockSymbol);
+        Bundle args = new Bundle();
+        args.putString(ARG_STOCK_SYMBOL, mStockSymbol);
+        getSupportLoaderManager().initLoader(LOADER_STOCK_HISTORY, args, this);
     }
 
-    private void updateUi(String stockSymbol) {
+    private void updateUI() {
         List<Entry> entries = new ArrayList<>();
 
         for(int i = 0; i < mPriceHistory.size(); i++) {
