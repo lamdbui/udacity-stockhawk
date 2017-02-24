@@ -95,6 +95,11 @@ public class StockWidgetRemoteViewsService extends RemoteViewsService {
                     views.setTextViewText(R.id.widget_stock_symbol, stockSymbol);
                     views.setTextViewText(R.id.widget_price, stockPriceString);
                     views.setTextViewText(R.id.widget_change, stockPercentChangeBuilder.toString());
+
+                    final Intent fillInIntent = new Intent();
+                    // we can also add an extra here if we want to pass that down
+                    // for this app, we are just launching the MainActivity though
+                    views.setOnClickFillInIntent(R.id.widget_stock_list_item, fillInIntent);
                 }
 
                 return views;
