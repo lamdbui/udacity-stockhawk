@@ -62,7 +62,7 @@ public class StockDetailActivity extends AppCompatActivity
         if(data != null) {
             for(HistoricalQuote h : data) {
 
-                SimpleDateFormat formatter = new SimpleDateFormat("YYYY-MMM");
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MMM");
                 Calendar calendar = h.getDate();
                 String formattedDate = formatter.format(calendar.getTime());
 
@@ -137,8 +137,9 @@ public class StockDetailActivity extends AppCompatActivity
         xAxis.setTextColor(Color.WHITE);
         xAxis.setTextSize(12.0f);
         xAxis.setValueFormatter(new DateLabelFormatter(mDateHistory));
-        xAxis.setGranularity(2.0f);
-        xAxis.setGranularityEnabled(true);
+        //xAxis.setGranularity(4.0f);
+        //xAxis.setGranularityEnabled(true);
+        xAxis.setLabelCount(6);
 
         Legend legend = mChart.getLegend();
         legend.setTextColor(Color.WHITE);
