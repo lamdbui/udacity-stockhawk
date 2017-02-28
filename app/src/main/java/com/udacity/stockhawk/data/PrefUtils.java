@@ -52,6 +52,9 @@ public final class PrefUtils {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = prefs.edit();
+        // Ensure that stock list is updated properly
+        editor.remove(key);
+        editor.apply();
         editor.putStringSet(key, stocks);
         editor.apply();
     }

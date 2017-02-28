@@ -79,6 +79,7 @@ public final class QuoteSyncJob {
                 // Yahoo Finance API will return null if the stock is no good
                 // so we don't want to do anything and return an error message
                 if (stock == null) {
+                    PrefUtils.removeStock(context, symbol);
                     PrefUtils.displayInvalidStockError(context, symbol);
                 }
                 else {
