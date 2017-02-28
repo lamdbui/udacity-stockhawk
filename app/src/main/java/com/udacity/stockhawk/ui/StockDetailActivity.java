@@ -136,7 +136,7 @@ public class StockDetailActivity extends AppCompatActivity
         XAxis xAxis = mChart.getXAxis();
         xAxis.setTextColor(Color.WHITE);
         xAxis.setTextSize(12.0f);
-        xAxis.setValueFormatter(new DateLabelFormatter(mDateHistory));
+        //xAxis.setValueFormatter(new DateLabelFormatter(mDateHistory));
         //xAxis.setGranularity(4.0f);
         //xAxis.setGranularityEnabled(true);
         xAxis.setLabelCount(6);

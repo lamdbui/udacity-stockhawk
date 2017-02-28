@@ -76,41 +76,48 @@ public final class QuoteSyncJob {
 
                 Stock stock = quotes.get(symbol);
 
-                // remove unavailable stock from our list, so we don't search again
-                if(stock.getName() == null) {
-                    PrefUtils.removeStock(context, symbol);
+                // Yahoo Finance API will return null if the stock is no good
+                // so we don't want to do anything and return an error message
+                if (stock == null) {
                     PrefUtils.displayInvalidStockError(context, symbol);
                 }
                 else {
-                    StockQuote quote = stock.getQuote();
 
-                    float price = quote.getPrice().floatValue();
-                    float change = quote.getChange().floatValue();
-                    float percentChange = quote.getChangeInPercent().floatValue();
+                    // remove unavailable stock from our list, so we don't search again
+                    if (stock.getName() == null) {
+                        PrefUtils.removeStock(context, symbol);
+                        PrefUtils.displayInvalidStockError(context, symbol);
+                    } else {
+                        StockQuote quote = stock.getQuote();
 
-                    // WARNING! Don't request historical data for a stock that doesn't exist!
-                    // The request will hang forever X_x
-                    List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
+                        float price = quote.getPrice().floatValue();
+                        float change = quote.getChange().floatValue();
+                        float percentChange = quote.getChangeInPercent().floatValue();
 
-                    StringBuilder historyBuilder = new StringBuilder();
+                        // WARNING! Don't request historical data for a stock that doesn't exist!
+                        // The request will hang forever X_x
+                        List<HistoricalQuote> history = stock.getHistory(from, to, Interval.WEEKLY);
 
-                    for (HistoricalQuote it : history) {
-                        historyBuilder.append(it.getDate().getTimeInMillis());
-                        historyBuilder.append(", ");
-                        historyBuilder.append(it.getClose());
-                        historyBuilder.append("\n");
+                        StringBuilder historyBuilder = new StringBuilder();
+
+                        for (HistoricalQuote it : history) {
+                            historyBuilder.append(it.getDate().getTimeInMillis());
+                            historyBuilder.append(", ");
+                            historyBuilder.append(it.getClose());
+                            historyBuilder.append("\n");
+                        }
+
+                        ContentValues quoteCV = new ContentValues();
+                        quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
+                        quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
+                        quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
+                        quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
+                        quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
+
+                        quoteCVs.add(quoteCV);
                     }
 
-                    ContentValues quoteCV = new ContentValues();
-                    quoteCV.put(Contract.Quote.COLUMN_SYMBOL, symbol);
-                    quoteCV.put(Contract.Quote.COLUMN_PRICE, price);
-                    quoteCV.put(Contract.Quote.COLUMN_PERCENTAGE_CHANGE, percentChange);
-                    quoteCV.put(Contract.Quote.COLUMN_ABSOLUTE_CHANGE, change);
-                    quoteCV.put(Contract.Quote.COLUMN_HISTORY, historyBuilder.toString());
-
-                    quoteCVs.add(quoteCV);
                 }
-
             }
 
             context.getContentResolver()
